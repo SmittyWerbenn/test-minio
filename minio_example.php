@@ -9,10 +9,10 @@ function uploadFileToMinio($bucket, $filePath, $key) {
     $s3 = new S3Client([
         'version' => 'latest',
         'region'  => 'us-east-1', // Ganti dengan region Anda
-        'endpoint' => 'http://minio-server:9000', // Ganti dengan endpoint MinIO Anda
+        'endpoint' => 'http://10.1.50.220:9000', // Ganti dengan endpoint MinIO Anda
         'credentials' => [
-            'key'    => 'YOUR_MINIO_ACCESS_KEY',
-            'secret' => 'YOUR_MINIO_SECRET_KEY',
+            'key'    => '3wVZREQt28AgO36dLBz3',
+            'secret' => '5JI4c5CytoMjzo9CdFBKTZaUldJaTvmOpg3zUlLQ',
         ],
         'use_path_style_endpoint' => true,
     ]);
