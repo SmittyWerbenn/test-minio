@@ -1,46 +1,41 @@
 <?php
 
-require 'minio_config.php';
+require 'vendor/autoload.php'; // Pastikan autoload sudah diatur
 
-function uploadFileToMinio($bucket, $filePath, $fileName) {
-    $s3 = getMinioClient();
+use Aws\S3\S3Client; // Pastikan Anda menggunakan namespace yang tepat
+
+function uploadFileToMinio($bucket, $filePath, $key) {
+    // Konfigurasi S3 Client
+    $s3 = new S3Client([
+        'version' => 'latest',
+        'region'  => 'us-east-1', // Ganti dengan region Anda
+        'endpoint' => 'http://minio-server:9000', // Ganti dengan endpoint MinIO Anda
+        'credentials' => [
+            'key'    => 'YOUR_MINIO_ACCESS_KEY',
+            'secret' => 'YOUR_MINIO_SECRET_KEY',
+        ],
+        'use_path_style_endpoint' => true,
+    ]);
 
     try {
+        // Mengunggah file
         $result = $s3->putObject([
             'Bucket' => $bucket,
-            'Key'    => $fileName,
-            'SourceFile' => $filePath,
-            'ACL'    => 'public-read',  // Menjadikan file dapat diakses publik
+            'Key'    => $key,
+            'SourceFile' => $filePath, // Path ke file yang ingin diunggah
         ]);
-        
+
         echo "File uploaded successfully. File URL: " . $result['ObjectURL'] . "\n";
-    } catch (Aws\S3\Exception\S3Exception $e) {
+    } catch (Exception $e) {
         echo "Error uploading file: " . $e->getMessage() . "\n";
     }
 }
 
-function getFileFromMinio($bucket, $fileName) {
-    $s3 = getMinioClient();
+// Ganti dengan nama bucket Anda dan key untuk file yang akan diunggah
+$bucket = 'minio-iet';
+$filePath = './sample.txt'; // Pastikan path ini benar
+$key = 'uploaded-file.txt';
 
-    try {
-        $result = $s3->getObject([
-            'Bucket' => $bucket,
-            'Key'    => $fileName,
-        ]);
+uploadFileToMinio($bucket, $filePath, $key);
 
-        echo "File content:\n";
-        echo $result['Body'];
-    } catch (Aws\S3\Exception\S3Exception $e) {
-        echo "Error retrieving file: " . $e->getMessage() . "\n";
-    }
-}
-
-// Contoh penggunaan:
-// Mengunggah file
-$bucket = 'minio-iet';       // Nama bucket di MinIO
-$filePath = '/test';  // Path file yang akan diunggah
-$fileName = 'uploaded-file.txt';   // Nama file saat disimpan di MinIO
-uploadFileToMinio($bucket, $filePath, $fileName);
-
-// Mengambil file
-getFileFromMinio($bucket, $fileName);
+?>
