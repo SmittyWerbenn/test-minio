@@ -20,3 +20,5 @@ RUN composer install
 
 # Perintah default saat container berjalan
 CMD ["php", "minio_example.php"]
+
+EXPOSE 8880
